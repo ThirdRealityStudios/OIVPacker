@@ -34,26 +34,19 @@ void assertCorrectMainArgs(int argc, char **argv)
 		puts("\nIf there are any errors,\n"
 		     "please make sure you restart your computer and have elevated rights.\n");
 	}
-	else
+	else // otherwise just quit the program (I know there are memory leaks then but I don't care)..
 	{
-		if(argc <= 1)
-			fprintf(stderr, "Please specifiy the modpack path and 2nd a filepath for the resulting .oiv archive!");
-		else if(argc == 2)
-			fprintf(stderr, "Please also specify 2nd a filepath for the resulting .oiv archive!");
-		else
-			fprintf(stderr, "Too many arguments!");
-		
 		exit(EXIT_FAILURE);
 	}
 }
 
-void welcomeUser(char *programTitle, char *author)
+void welcomeUser(char *programTitle, char *author, char *consoleUsage)
 {
 	SetConsoleTitle(programTitle);
 	
 	printf("\n[%s]\n\n"
-		   "Discord: %s\n\n",
-	       programTitle, author);
+		   "Discord (support): %s\n\nUsage: %s\n\n",
+	       programTitle, author, consoleUsage);
 }
 
 void genAssemblyContent_Internally(char *modpackPath, char *relativePath, char **resultFileContent, int isArchive)

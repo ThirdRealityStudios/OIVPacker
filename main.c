@@ -21,8 +21,13 @@
 
 // gcc ./main.c ./list.c ./subroutine.c ./stringHelper.c ./fileHelper.c ./xmlHelper.c ./directoryHelper.c ./reporter.c ./internetHelper.c ./test/stringHelperTest.c ./test/listTest.c ./test/directoryHelperTest.c ./test/xmlHelperTest.c -o main.exe -lws2_32
 
+// Name of the running .exe on filesystem.
+char *executableName = NULL;
+
 char *programTitle = "OIV Tools: Packer";
-char *author = "https://discord.gg/tMkHnXVT";
+char *author = "https://discord.gg/NWfbX5tcmE"; // Permanent link, never expires: https://discord.gg/NWfbX5tcmE
+char *consoleUsage = NULL; // Needs to be initialized cuz program name of .exe can vary (if user renames it).
+
 char *modpackPath = NULL;
 char *oivFilepath = NULL;
 
@@ -215,8 +220,30 @@ void activateProduct(char *localDirectoryPath)
 	productActivationLossDateTm = NULL;
 }
 
-void preInit()
+void preInit(char *executableFilepath)
 {
+	char *filename = executableFilepath + strlen(executableFilepath);
+
+	// Determine the file name only without the directories.
+    for(; filename > executableFilepath; filename--)
+    {
+        if((*filename == '\\') || (*filename == '/'))
+        {
+            filename++;
+			
+            break;
+        }
+    }
+
+	consoleUsage = safeStrCat(filename, " <modpack source directory> <archive target filepath>\n\n"
+										"<modpack source directory>, e.g.\n"
+										"\t\"C:\\Users\\myAccount\\Desktop\\myModpackFolder\"\n\n"
+										"<archive target filepath>, e.g.\n"
+										"\t\"myFirstModpack.oiv\" (saved into same folder as program)\n"
+										"\t\"C:\\Users\\myAccount\\Desktop\\myFirstModpack.oiv\"\n\n"
+										"\tRemember to use .oiv as file ending.\n"
+										"\tAlso make sure the .oiv file does not exist yet!");
+	
 	DWORD maxUserNameLength = UNLEN+1; // inclusive NULL-byte.
 	
 	userName = calloc(sizeof(char), maxUserNameLength);
@@ -271,17 +298,17 @@ void testModules()
 ///		   If not, the program will not work.
 int main(int argc, char **argv) // TODO Save activation file in %appdata%/Local/ThirdRealityStudios/OIVPacker
 {
-	preInit();
+	preInit(*argv); // Pass the executable filepath on filesystem.
 	
 	// Example usage: ./main.exe "./Setup 1.oiv" "./myModpack/"
 	
 	// testModules(); // Only uncomment if there are errors.
 	
-	welcomeUser(programTitle, author);
+	welcomeUser(programTitle, author, consoleUsage);
 	
 	activateProduct(localDirectoryPath); // Activation check before use.
 	
-	assertCorrectMainArgs(argc, argv); // !!!!!!! TODO Make sure the destination .oiv file does not exist yet !!!!!!!!
+	assertCorrectMainArgs(argc, argv);
 	// From here, it is safe to use main args now as intended.
 	
 	init(argc, argv); // do NOT change order! Leave it here after assertCorrectMainArgs(argc, argv) check..
@@ -408,6 +435,9 @@ int main(int argc, char **argv) // TODO Save activation file in %appdata%/Local/
 	
 	free(modpackPath);
 	modpackPath = NULL;
+	
+	free(consoleUsage);
+	consoleUsage = NULL;
 
 	fputs("Exiting program (done, everything successful, no errors)\n", stdout);
 

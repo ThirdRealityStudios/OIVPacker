@@ -4,7 +4,8 @@
 /// @brief Welcomes the user on the console and sets the window title.
 /// @param programTitle Variable reference from main.c after calling init().
 /// @param author Variable reference from main.c after calling init().
-void welcomeUser(char *programTitle, char *author);
+/// @param consoleUsage Usage of the program, using the Windows 11 console.
+void welcomeUser(char *programTitle, char *author, char *consoleUsage);
 
 /// @brief The same as assertExistingDirectories(), but for the main arguments.
 /// @param argc Exact argument from main() function (just pass from main() here without changes).

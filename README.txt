@@ -6,6 +6,20 @@ Summarized, if you want to get the OIV Tools, then you will receive two tools in
 * OIV Unpacker
 * OIV Packer
 
+How To Use:
+
+1. Open start menu or press Windows key
+2. Search for "cmd.exe" or "powershell.exe"
+3. Open one of them
+4. Type in the command "cd <directory path of your extracted files>"
+5. Type in the command ".\packer.exe" or simply "packer.exe"
+6. Follow the instructions on the console (especially parameters)
+
+Program Does Not Work As Expected
+
+- run your console as administrator (right-click on "cmd.exe" in start menu -> Run as administrator) and try again
+- make sure you have a stable internet connection
+
 Product Key:
 
 Both, OIV Unpacker and OIV Packer,
@@ -25,4 +39,4 @@ Product Requirements:
 
 Support & for getting a licensed software (Discord):
 
-https://discord.gg/tMkHnXVT
+https://discord.gg/NWfbX5tcmE
