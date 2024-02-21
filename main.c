@@ -281,7 +281,7 @@ int main(int argc, char **argv) // TODO Save activation file in %appdata%/Local/
 	
 	activateProduct(localDirectoryPath); // Activation check before use.
 	
-	assertCorrectMainArgs(argc, argv);
+	assertCorrectMainArgs(argc, argv); // !!!!!!! TODO Make sure the destination .oiv file does not exist yet !!!!!!!!
 	// From here, it is safe to use main args now as intended.
 	
 	init(argc, argv); // do NOT change order! Leave it here after assertCorrectMainArgs(argc, argv) check..

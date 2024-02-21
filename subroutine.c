@@ -110,7 +110,8 @@ void genAssemblyContent_Internally(char *modpackPath, char *relativePath, char *
 		
 		// Add formatted string the assembly.xml file content
 		temp0 = safeStrCat(*resultFileContent, temp1);
-		free(*resultFileContent);
+		free(*resultFileContent); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< HERE ALREADY DID FREE temp !!
+								  // 										   CUZ ASSIGNED *resultFileContent = temp
 		*resultFileContent = NULL;
 		*resultFileContent = temp0; // Save progress.
 		temp0 = NULL;
@@ -221,10 +222,10 @@ void genAssemblyContent_Internally(char *modpackPath, char *relativePath, char *
 
 void genAssemblyContent(char *modpackPath, char **resultFileContent)
 {
+	char *temp = NULL, *temp2 = NULL;
+	
 	// Init target string (just an empty string).
 	*resultFileContent = calloc(sizeof(char), 1);
-	
-	char *temp = *resultFileContent;
 	
 	// Ask user what name the modpack has and which version:
 	char name[32];
@@ -249,33 +250,50 @@ void genAssemblyContent(char *modpackPath, char **resultFileContent)
 		{
 			puts("Incorrect version format! Enter like this: 1.2, 2.1, 1.1 or 0.1 and so on:");
 		}
+		else if(version < 0 || version >= 10)
+		{
+			puts("Please enter a version between 0 (including) and 10 (excluded)");
+		}
 	}
-	while(inputs != 1);
+	while(inputs != 1 || version < 0 || version >= 10);
+	
+	int bugCounter = 0;
 	
 	char *versionFormatted = calloc(sizeof(char), 4);
 	
 	sprintf(versionFormatted, "%.1f", version);
 	
+	char *majorVersion = calloc(sizeof(char), 2);
+	*majorVersion = *versionFormatted; // So first char is the major version number, exact one digit.
+	char *minorVersion = calloc(sizeof(char), 2);
+	*minorVersion = versionFormatted[2]; // So the char after the dot (minor version number, exact one digit).
+	
 	// <?xml version="1.0" encoding="UTF-8"?> <package version="
 	puts("");
-	
+
+	// OpenIV version is here 2.0 in <package version=...
+	temp = safeStrCat("<?xml version=\"1.0\" encoding=\"UTF-8\"?><package version=\"2.0\" id=\"{8DC63569-721C-4552-8D71-470770B77E95}\" target=\"IV\"><metadata><name>", name);
+
+	temp2 = safeStrCat(temp, "</name><version><major>");
 	free(temp);
 	temp = NULL;
-	
-	temp = safeStrCat("<?xml version=\"1.0\" encoding=\"UTF-8\"?><package version=\"", versionFormatted);
-	
-	char *temp2 = safeStrCat(temp, "\" id=\"{8DC63569-721C-4552-8D71-470770B77E95}\" target=\"IV\"><metadata><name>");
-	free(temp);
-	temp = NULL;
-	
-	temp = safeStrCat(temp2, name);
+
+	temp = safeStrCat(temp2, majorVersion);
 	free(temp2);
 	temp2 = NULL;
-	
-	temp2 = safeStrCat(temp, "</name><version><major>1</major><minor>0</minor><tag>Stable</tag></version><author><displayName>");
+
+	temp2 = safeStrCat(temp, "</major><minor>");
 	free(temp);
 	temp = NULL;
-	
+
+	temp = safeStrCat(temp2, minorVersion);
+	free(temp2);
+	temp2 = NULL;
+
+	temp2 = safeStrCat(temp, "</minor><tag>Stable</tag></version><author><displayName>");
+	free(temp);
+	temp = NULL;
+
 	char *author = calloc(sizeof(char), 32);
 	
 	printf("Please now enter author of modpack (max. 32 symbols): ");
@@ -284,13 +302,13 @@ void genAssemblyContent(char *modpackPath, char **resultFileContent)
 	temp = safeStrCat(temp2, author);
 	free(temp2);
 	temp2 = NULL;
-	
+
 	// </displayName></author><description><![CDATA[
 	
 	temp2 = safeStrCat(temp, "</displayName></author><description><![CDATA[");
 	free(temp);
 	temp = NULL;
-	
+
 	char *description = calloc(sizeof(char), 32);
 	
 	printf("Please now enter a short description of modpack (max. 32 symbols): ");
@@ -299,36 +317,44 @@ void genAssemblyContent(char *modpackPath, char **resultFileContent)
 	temp = safeStrCat(temp2, description);
 	free(temp2);
 	temp2 = NULL;
-	
+
 	temp2 = safeStrCat(temp, "]]></description></metadata><colors><headerBackground useBlackTextColor=\"False\">$FF000000</headerBackground><iconBackground>$FF000000</iconBackground></colors><content>");
 	free(temp);
 	temp = NULL;
-	
+
 	temp = safeStrCat(*resultFileContent, temp2);
 	free(temp2);
 	temp2 = NULL;
-	
+
 	free(*resultFileContent);
 	*resultFileContent = NULL;
 	
 	// Update file content:
-	*resultFileContent = temp;
+	*resultFileContent = temp; // Work here again with latest updated version to build up the file content.
 	
 	// </content></package>
-	
+
 	genAssemblyContent_Internally(modpackPath, "", resultFileContent, 0);
-	
+
 	temp2 = safeStrCat(*resultFileContent, "</content></package>");
-	free(temp);
+
+	free(temp); // Uncommented in order to remember NOT to call free after calling genAssemblyContent_Internally()
+	// Why? Because temp was freed yet by the function. Otherwise you would free a dangling pointer => crash! (so bugfix here).
 	temp = NULL;
 	
 	*resultFileContent = temp2;
-	
+
 	free(description);
 	description = NULL;
 	
 	free(author);
 	author = NULL;
+	
+	free(majorVersion);
+	majorVersion = NULL;
+	
+	free(minorVersion);
+	minorVersion = NULL;
 	
 	free(versionFormatted);
 	versionFormatted = NULL;
