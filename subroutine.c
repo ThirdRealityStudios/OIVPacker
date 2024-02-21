@@ -103,8 +103,8 @@ void genAssemblyContent_Internally(char *modpackPath, char *relativePath, char *
 		
 		// Add formatted string the assembly.xml file content
 		temp0 = safeStrCat(*resultFileContent, temp1);
-		free(*resultFileContent); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< HERE ALREADY DID FREE temp !!
-								  // 										   CUZ ASSIGNED *resultFileContent = temp
+		free(*resultFileContent);
+		
 		*resultFileContent = NULL;
 		*resultFileContent = temp0; // Save progress.
 		temp0 = NULL;
@@ -331,7 +331,7 @@ void genAssemblyContent(char *modpackPath, char **resultFileContent)
 
 	temp2 = safeStrCat(*resultFileContent, "</content></package>");
 
-	free(temp); // Uncommented in order to remember NOT to call free after calling genAssemblyContent_Internally()
+	// free(temp); Uncommented in order to remember NOT to call free after calling genAssemblyContent_Internally()
 	// Why? Because temp was freed yet by the function. Otherwise you would free a dangling pointer => crash! (so bugfix here).
 	temp = NULL;
 	
