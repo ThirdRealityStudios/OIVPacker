@@ -28,8 +28,10 @@ Create Your Own Modpack Preview Picture:
 
 Program Does Not Work As Expected:
 
+- Make sure all files and folders do exist where they should be (check every single symbol)
 - Run your console as administrator (right-click on "cmd.exe" in start menu -> Run as administrator) and try again
 - Make sure you have a stable internet connection
+- Otherwise simply restart your PC and try again
 
 Product Key / Activation:
 
